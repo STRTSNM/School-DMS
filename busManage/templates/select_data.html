@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter Students</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #3498db;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        select, input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: url("arrow.png") no-repeat right center;
+        }
+
+        input[type="submit"] {
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+
+        li:hover {
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        li strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Filter bus data</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="id_class">Class:</label>
+        <select id="id_class" name="class">
+            <option value="" {% if selected_class is None %}selected{% endif %}>None</option>
+            {% for choice in class_choices %}
+                {% if choice.0 != None %}
+                    <option value="{{ choice.0 }}" {% if choice.0 == selected_class %}selected{% endif %}>{{ choice.1 }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+
+        <label for="id_bus_route">Bus Route:</label>
+        <select id="id_bus_route" name="bus_route">
+            <option value="" selected>---------</option>
+            {% for route in bus_routes %}
+                <option value="{{ route.id }}" {% if route.id == selected_route_id %}selected{% endif %}>{{ route.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="id_bus_stop">Bus Stop:</label>
+        <select id="id_bus_stop" name="bus_stop">
+            <option value="" selected>---------</option>
+            {% for stop in bus_stops %}
+                <option value="{{ stop.id }}" data-route-id="{{ stop.route.id }}" {% if stop.id == selected_stop_id %}selected{% endif %}>{{ stop.name }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="submit" value="Retrieve Students">
+    </form>
+
+    {% if students %}
+        <h2>Students Matching the Criteria:</h2>
+        <ul>
+            {% for student in students %}
+                <li>
+                    <strong>Name:</strong> {{ student.name }}<br>
+                    <strong>Class:</strong> {{ student.classs }}<br>
+                    <strong>Bus Route:</strong> {{ student.bus_route.name }}<br>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const busRouteSelect = document.getElementById('id_bus_route');
+        const busStopSelect = document.getElementById('id_bus_stop');
+        
+        // Function to update bus stops based on the selected bus route
+        function updateBusStops() {
+            const selectedRouteId = busRouteSelect.value;
+            
+            // Hide all bus stops
+            [...busStopSelect.options].forEach(option => {
+                option.style.display = 'none';
+            });
+            
+            // Show bus stops for the selected route
+            [...busStopSelect.options].forEach(option => {
+                if (option.dataset.routeId === selectedRouteId || option.value === '') {
+                    option.style.display = 'block';
+                }
+            });
+            
+            // Reset the selected bus stop
+            busStopSelect.selectedIndex = 0;
+        }
+        
+        // Add event listener to the bus route dropdown
+        busRouteSelect.addEventListener('change', updateBusStops);
+        
+        // Initialize bus stops based on the initial selected bus route
+        updateBusStops();
+
+        // to be expanded further...
+    });
+    </script>
+</body>
+</html>
