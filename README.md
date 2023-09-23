@@ -10,8 +10,14 @@ Yet another school data management system
 1. Python 3.7+
 2. MariaDB
 3. Django
+4. Pandas
+5. Openpyxl
 
 # Screenshot:
 ![](https://github.com/STRTSNM/School-DMS/blob/main/scrnsht.png)
+![](https://github.com/STRTSNM/School-DMS/blob/main/scrnsht1.png)
+![](https://github.com/STRTSNM/School-DMS/blob/main/scrnsht2.png)
+![](https://github.com/STRTSNM/School-DMS/blob/main/scrnsht3.png)
+
 
    
